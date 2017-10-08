@@ -1,0 +1,41 @@
+version: '3.1'
+
+services:
+
+  wordpress:
+    image: wordpress
+    hostname: domainname2.net
+    restart: always
+    ports:
+      - "8080:80"
+    depends_on:
+      - mysql
+    links:
+      - mysql
+    volumes:
+      - /srv/docker/wordpress/wp-content:/var/www/html/wp-content
+    environment:
+      VIRTUAL_HOST: domainname2.net
+      VIRTUAL_PORT: 8080
+      LETSENCRYPT_HOST: domainname2.net
+      LETSENCRYPT_EMAIL: emailaddress@test.com
+      LETSENCRYPT_TEST: "false"
+
+      WORDPRESS_DB_PASSWORD: sample
+    networks:
+      - default
+      - ssl_proxy
+
+  mysql:
+    image: mysql:5.7
+    restart: always
+    volumes:
+    - /srv/docker/wordpress/mysql:/var/lib/mysql
+    environment:
+      MYSQL_ROOT_PASSWORD: sample
+    networks:
+      - default
+
+networks:
+  ssl_proxy:
+    external: true
